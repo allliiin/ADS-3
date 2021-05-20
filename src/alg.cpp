@@ -12,8 +12,7 @@ return 1;
 } else if(q == '(') {
 return 0;
 } else {
-return -1;
-}
+return -1;}
 }
 
 std::string infx2pstfx(std::string inf) {
