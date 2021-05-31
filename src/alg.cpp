@@ -2,75 +2,93 @@
 #include <string>
 #include "tstack.h"
 
+int pr(char c) {
+    switch (c) {
+      case '(':
+          return 0;
+      case ')':
+          return 1;
+      case '+':
+      case '-':
+          return 2;
+      case '*':
+          return 3;
+      case '/':
+          return 3;
+      default:
+          return -1;
+    }
+}
+
 std::string infx2pstfx(std::string inf) {
-	TStack<char> inf1;
-	int a = 0;
-	int a1 = 0;
-	std::string inf2;
-	std::string inf3;
-	char temp1 = 0;
-	char temp2 = 0;
-	char temp3 = 0;
+	TStack<char> stack;
+	std::string res;
+
+	for (int i = 0; i < inf.length(); i++) {
+	if ((inf[i] >= '0') && (inf[i] <= '9')) {
+	    res += inf[i];
+	    res += ' ';
+	} else if (inf[i] == '(') {
+	    stack.push(inf[i]);
+	} else if (pr(inf[i]) > pr(stack.get()) || stack.isEmpty()) {
+	    stack.push(inf[i]);
+	} else if (inf[i] == ')') {
+	    while (!stack.isEmpty() && stack.get() != '(') {
+		res += stack.get();
+		res += ' ';
+		stack.pop();
+	    }
+
+	    if (stack.get() == '(') {
+	       stack.pop();
+	    }
+	} else {
+	    while (!stack.isEmpty() && pr(stack.get()) >= pr(inf[i])) {
+		res += stack.get();
+		res += ' ';
+		stack.pop();
+	    }
+
+	    stack.push(inf[i]);
+	}
+   }
 	
-	while(a < inf.size()-1){      
-		if(PrOp(inf[a]) == -1){
-			inf1.push(inf[a]);
-			a++;
-		} else if((PrOp(inf[a]) == 3)||(PrOp(inf[a]) == 2)){
-			if(PrOp(inf[a+1]) != 0){
-				temp1 = inf[a];
-				a++;
-			} else {
-				if((PrOp(inf[a-3]) == 1)&&(PrOp(inf[a-2]) == 3)){
-					temp3 = inf[a];
-					a++;
-				} else {
-					temp2 = inf[a];
-					a++;
-				}
-			}
-		} else if(PrOp(inf[a]) == 0){
-			a++;
-			while(PrOp(inf[a]) != 1){
-				if(PrOp(inf[a]) == -1){
-					inf1.push(inf[a]);
-					a++;
-				} else if((PrOp(inf[a]) == 3)||(PrOp(inf[a]) == 2)){
-					temp1 = inf[a];
-					a++;
-				}
-			}
-			if(PrOp(inf[a]) == 1){
-				inf1.push(temp1);
-				temp1 = 0;
-				a++;
-			}
-			if(temp2 != 0){
-				inf1.push(temp2);
-				temp2 =0;
-			}
-		}
-		if((temp1!= 0)&&(PrOp(inf[a]) == -1)){
-			inf1.push(inf[a]);
-			inf1.push(temp1);
-			temp1 = 0;
-			a++;
-		}
+	while (!stack.isEmpty()) {
+		res += stack.get();
+		res += ' ';
+		stack.pop();
 	}
-	if(temp3 != 0){
-		inf1.push(temp3);
+
+	while (res[res.length() - 1] == ' ') {
+		res = res.substr(0, res.length()-1);
 	}
-	while(inf1.isEmpty() == false){
-		inf2 += inf1.get();
-		inf1.pop();
-	} 
-	a1 = inf2.size()-1;
-	while(a1 > -1){
-		inf3 += inf2[a1];
-		if(a1 > 0){
-		inf3 += ' ';
-		}
-		a1--;
-	} 
-	return inf3;
+	
+	return res;
+}
+
+int eval(std::string pst) {
+	 TStack<int> stack;
+
+    for (int i = 0; i < pst.length(); i++) {
+        if ((pst[i] >= '0') && (pst[i] <= '9')) {
+            stack.push(pst[i] - '0');
+        } else if (pst[i] != ' ') {
+            int a = stack.get();
+            stack.pop();
+            int b = stack.get();
+            stack.pop();
+
+            if (pst[i] == '-') {
+                stack.push(b - a);
+            } else if (pst[i] == '+') {
+                stack.push(b + a);
+            } else if (pst[i] == '*') {
+                stack.push(b * a);
+            } else {
+                stack.push(b / a);
+            }
+        }   
+    }
+
+    return stack.get();
 }
