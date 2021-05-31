@@ -2,8 +2,8 @@
 #include <string>
 #include "tstack.h"
 
-int pr(char c) {
-    switch (c) {
+int pr(char a) {
+    switch (a) {
       case '(':
           return 0;
       case ')':
@@ -73,19 +73,19 @@ int eval(std::string pst) {
         if ((pst[i] >= '0') && (pst[i] <= '9')) {
             stack.push(pst[i] - '0');
         } else if (pst[i] != ' ') {
-            int a = stack.get();
+            int l = stack.get();
             stack.pop();
-            int b = stack.get();
+            int m = stack.get();
             stack.pop();
 
             if (pst[i] == '-') {
-                stack.push(b - a);
+                stack.push(m - l);
             } else if (pst[i] == '+') {
-                stack.push(b + a);
+                stack.push(m + l);
             } else if (pst[i] == '*') {
-                stack.push(b * a);
+                stack.push(m * l);
             } else {
-                stack.push(b / a);
+                stack.push(m / l);
             }
         }   
     }
